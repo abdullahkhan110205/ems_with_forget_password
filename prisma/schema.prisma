@@ -8,27 +8,25 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String
-  email         String    @unique
-  password      String?
-  image         String?
-  emailVerified DateTime?
-  role          Role      @default(EMPLOYEE)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  employee Employee?
-
-  accounts Account[]
-  sessions Session[]
-  passwordResetTokens PasswordResetToken[]?
+  id                  String               @id @default(cuid())
+  name                String
+  email               String               @unique
+  password            String?
+  role                Role                 @default(EMPLOYEE)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  emailVerified       DateTime?
+  image               String?
+  accounts            Account[]
+  employee            Employee?
+  passwordResetTokens PasswordResetToken[]
+  sessions            Session[]
 }
 
 model Department {
-  id        String     @id @default(cuid())
   name      String     @unique
   createdAt DateTime   @default(now())
+  id        String     @id @default(cuid())
   employees Employee[]
 }
 
@@ -62,14 +60,12 @@ model ProjectEmployee {
 }
 
 model Employee {
-  id     String @id @default(cuid())
-  userId String @unique
-
-  departmentId String?
-  position     String?
-  joinedAt     DateTime?
-  salary       Float?
-
+  id               String            @id @default(cuid())
+  userId           String            @unique
+  position         String?
+  joinedAt         DateTime?
+  salary           Float?
+  departmentId     String?
   attendance       Attendance[]
   department       Department?       @relation(fields: [departmentId], references: [id])
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -109,27 +105,11 @@ model Client {
 
 model PasswordResetToken {
   id        String   @id @default(cuid())
-
-  userId    String
   token     String   @unique
-
-  expiresAt DateTime
+  userId    String
+  expires   DateTime
   createdAt DateTime @default(now())
-
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
-enum Role {
-  ADMIN
-  EMPLOYEE
-}
-
-enum LeaveStatus {
-  PENDING
-  APPROVED
-  REJECTED
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Account {
@@ -145,8 +125,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -156,8 +135,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -166,4 +144,15 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
