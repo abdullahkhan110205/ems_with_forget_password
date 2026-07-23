@@ -11,14 +11,14 @@ export async function POST(req: Request) {
       where: { email },
     });
 
-    // Don't reveal whether the email exists
+    
     if (!user) {
       return NextResponse.json({
         message: "If that email exists, a reset link has been sent.",
       });
     }
 
-    // Google-only users don't have passwords
+    
     if (!user.password) {
       return NextResponse.json({
         message: "This account uses social login.",
